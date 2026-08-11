@@ -1,6 +1,14 @@
 [
     {
-        "nome": "jogar",
+        "nome": "lavar loiça",
+        "concluida": false
+    },
+    {
+        "nome": "Ler um livro",
+        "concluida": false
+    },
+    {
+        "nome": "Jogar pc",
         "concluida": false
     }
 ]
