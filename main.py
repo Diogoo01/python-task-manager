@@ -1,4 +1,17 @@
 import os
+import json
+
+def guardar_tarefas(tarefas):
+    with open("tarefas.json", "w", encoding = "utf-8") as ficheiro:
+        json.dump(tarefas, ficheiro, indent=4, ensure_ascii=False) #ident -> Organiza com identação, 
+                                                                    #ensure -> mantem caracteres especiais legiveis
+
+def carregar_tarefas():
+    try:
+        with open("tarefas.json", "r", encoding= "utf-8") as ficheiro:
+            return json.load(ficheiro)
+    except FileNotFoundError:
+        return []
 
 def mostrar_menu():
     print("===== Gestor de Tarefas =====")
@@ -26,6 +39,7 @@ def mostrar_tarefas(tarefas):
 def adicionar_tarefa(tarefas): 
     tarefa_adicionada = input("Insira o nome da tarefa que pretende adicionar: ")
     tarefas.append({"nome": tarefa_adicionada, "concluida": False}) 
+    guardar_tarefas(tarefas)
     print("Tarefa Adicionada com sucesso!")
     
 def concluir_tarefa(tarefas):
@@ -40,6 +54,7 @@ def concluir_tarefa(tarefas):
     
     if 1 <= concluir <= len(tarefas):
         tarefas[concluir - 1]["concluida"] = True
+        guardar_tarefas(tarefas)
         print("Tarefa concluida com sucesso!")
     else:
         print("Numero de tarefa inválido.")
@@ -56,12 +71,12 @@ def remover_tarefa(tarefas):
 
     if 1 <= remover <= len(tarefas):
         tarefas.pop(remover-1)
+        guardar_tarefas(tarefas)
         print("Tarefa removida com sucesso!")
     else:
         print("Numero de tarefa invalido.")
-    
 
-tarefas = []
+tarefas = carregar_tarefas()
 
 while True:
 
