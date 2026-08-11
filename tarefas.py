@@ -158,3 +158,22 @@ def editar_tarefa(tarefas):
 
     guardar_tarefas(tarefas)
     print("Tarefa alterada com sucesso!")
+
+
+def pesquisar_tarefas(tarefas):
+    texto = input("Pesquisar: ").lower()
+    resultados = []
+
+    for tarefa in tarefas:
+        if (
+            texto in tarefa["nome"].lower()
+            or texto in tarefa["descricao"].lower()
+            or texto in tarefa["categoria"].lower()
+        ):
+            resultados.append(tarefa)
+
+    if not resultados:
+        print("Nenhuma tarefa encontrada.")
+        return
+
+    mostrar_tarefas(resultados)

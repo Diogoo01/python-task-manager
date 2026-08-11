@@ -8,6 +8,7 @@ from tarefas import (
     concluir_tarefa,
     limpar_tarefas,
     editar_tarefa,
+    pesquisar_tarefas,
 )
 
 tarefas = carregar_tarefas()
@@ -44,11 +45,15 @@ while True:
         editar_tarefa(tarefas)
         pausar()
 
+    elif escolha == 7:
+        pesquisar_tarefas(tarefas)
+        pausar()
+
     elif escolha == 0:
         print("A sair...")
         break
 
-    elif escolha in (7, 8, 9):
+    elif escolha in (8, 9):
         print("Funcionalidade ainda não implementada.")
         pausar()
 
