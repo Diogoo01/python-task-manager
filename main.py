@@ -7,6 +7,7 @@ from tarefas import (
     remover_tarefa,
     concluir_tarefa,
     limpar_tarefas,
+    editar_tarefa,
 )
 
 tarefas = carregar_tarefas()
@@ -43,6 +44,10 @@ while True:
         limpar_tarefas(tarefas)
         pausar()
 
+    elif escolha == 6:
+        editar_tarefa(tarefas)
+        pausar()
+
     else:
-        print("Por favor introduza um numero valido (0-4)")
+        print("Por favor introduza um numero valido (0-6)")
         pausar()

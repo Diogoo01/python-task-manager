@@ -2,6 +2,20 @@ from ficheiros import guardar_tarefas
 from utils import pedir_numero
 
 
+def pedir_prioridade():
+    while True:
+        prioridade = pedir_numero("Prioridade (1-Alta, 2-Média, 3-Baixa): ")
+
+        if prioridade == 1:
+            return "Alta"
+        elif prioridade == 2:
+            return "Média"
+        elif prioridade == 3:
+            return "Baixa"
+        else:
+            print("Prioridade inválida.")
+
+
 def mostrar_tarefas(tarefas):
     if not tarefas:
         print("Não existem tarefas.")
@@ -24,20 +38,7 @@ def adicionar_tarefa(tarefas):
     descricao = input("Descrição: ")
     categoria = input("Categoria: ")
 
-    while True:
-        prioridade = pedir_numero("Prioridade (1-Alta, 2-Média, 3-Baixa): ")
-
-        if prioridade == 1:
-            prioridade = "Alta"
-            break
-        elif prioridade == 2:
-            prioridade = "Média"
-            break
-        elif prioridade == 3:
-            prioridade = "Baixa"
-            break
-        else:
-            print("Prioridade inválida.")
+    prioridade = pedir_prioridade()
 
     tarefa = {
         "nome": nome,
@@ -101,3 +102,52 @@ def limpar_tarefas(tarefas):
         print("Todas as tarefas foram removidas!")
     else:
         print("Operação cancelada.")
+
+
+def editar_tarefa(tarefas):
+    if not tarefas:
+        print("Não existem tarefas.")
+        return
+
+    mostrar_tarefas(tarefas)
+
+    editar_numero = pedir_numero("Número da tarefa: ")
+
+    if not 1 <= editar_numero <= len(tarefas):
+        print("Número de tarefa inválido.")
+        return
+
+    print(
+        "\nO que pretende editar?\n"
+        "1 - Nome\n"
+        "2 - Descrição\n"
+        "3 - Categoria\n"
+        "4 - Prioridade\n"
+        "0 - Cancelar"
+    )
+
+    editar_tipo = pedir_numero("Opção: ")
+
+    tarefa = tarefas[editar_numero - 1]
+
+    if editar_tipo == 1:
+        tarefa["nome"] = input("Novo nome: ")
+
+    elif editar_tipo == 2:
+        tarefa["descricao"] = input("Nova descrição: ")
+
+    elif editar_tipo == 3:
+        tarefa["categoria"] = input("Nova categoria: ")
+
+    elif editar_tipo == 4:
+        tarefa["prioridade"] = pedir_prioridade()
+
+    elif editar_tipo == 0:
+        return
+
+    else:
+        print("Opção inválida.")
+        return
+
+    guardar_tarefas(tarefas)
+    print("Tarefa alterada com sucesso!")

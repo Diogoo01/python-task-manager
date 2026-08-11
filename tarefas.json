@@ -1,14 +1,14 @@
 [
     {
-        "nome": "Jogar pc",
+        "nome": "Lavar dentes",
         "descricao": "Em casa",
-        "categoria": "Lazer",
-        "prioridade": "Baixa",
+        "categoria": "Desporto",
+        "prioridade": "Média",
         "concluida": false
     },
     {
         "nome": "Cozinhar",
-        "descricao": "Em casa",
+        "descricao": "Rua",
         "categoria": "Cozinha",
         "prioridade": "Alta",
         "concluida": false

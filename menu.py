@@ -5,4 +5,5 @@ def mostrar_menu():
     print("3 - Concluir Tarefa")
     print("4 - Remover Tarefa")
     print("5 - Limpar todas as Tarefas")
+    print("6 - Editar Tarefa")
     print("0 - Sair\n")
