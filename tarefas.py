@@ -1,5 +1,5 @@
 from ficheiros import guardar_tarefas
-from utils import pedir_numero
+from utils import pedir_numero, data_atual, formatar_data
 
 
 def pedir_prioridade():
@@ -24,12 +24,13 @@ def mostrar_tarefas(tarefas):
     for i, tarefa in enumerate(tarefas, start=1):
 
         estado = "[X]" if tarefa["concluida"] else "[ ]"
+        data = formatar_data(tarefa["criada_em"])
 
         print(
             f"{i} - {estado} {tarefa['nome']} | "
             f"{tarefa['prioridade']} | {tarefa['categoria']}"
         )
-        print(f"    {tarefa['descricao']}")
+        print(f"    {tarefa['descricao']} | Criada: {data}")
         print()
 
 
@@ -39,6 +40,7 @@ def adicionar_tarefa(tarefas):
     categoria = input("Categoria: ")
 
     prioridade = pedir_prioridade()
+    criada_em = data_atual()
 
     tarefa = {
         "nome": nome,
@@ -46,6 +48,7 @@ def adicionar_tarefa(tarefas):
         "categoria": categoria,
         "prioridade": prioridade,
         "concluida": False,
+        "criada_em": criada_em,
     }
 
     tarefas.append(tarefa)

@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 
 def limpar_terminal():
@@ -16,3 +17,12 @@ def pedir_numero(mensagem):
             return escolha
         except ValueError:
             print("Por favor introduza um valor válido.")
+
+
+def data_atual():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+def formatar_data(data_texto):
+    data = datetime.strptime(data_texto, "%Y-%m-%d %H:%M:%S")
+    return data.strftime("%d/%m/%Y %H:%M")
