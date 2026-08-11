@@ -1,14 +1,16 @@
 [
     {
-        "nome": "lavar loiça",
-        "concluida": false
-    },
-    {
-        "nome": "Ler um livro",
-        "concluida": false
-    },
-    {
         "nome": "Jogar pc",
+        "descricao": "Em casa",
+        "categoria": "Lazer",
+        "prioridade": "Baixa",
+        "concluida": false
+    },
+    {
+        "nome": "Cozinhar",
+        "descricao": "Em casa",
+        "categoria": "Cozinha",
+        "prioridade": "Alta",
         "concluida": false
     }
 ]
