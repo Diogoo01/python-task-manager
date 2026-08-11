@@ -36,10 +36,6 @@ while True:
         remover_tarefa(tarefas)
         pausar()
 
-    elif escolha == 0:
-        print("A sair...")
-        break
-
     elif escolha == 5:
         limpar_tarefas(tarefas)
         pausar()
@@ -48,6 +44,14 @@ while True:
         editar_tarefa(tarefas)
         pausar()
 
+    elif escolha == 0:
+        print("A sair...")
+        break
+
+    elif escolha in (7, 8, 9):
+        print("Funcionalidade ainda não implementada.")
+        pausar()
+
     else:
-        print("Por favor introduza um numero valido (0-6)")
+        print("Por favor introduza um numero valido (0-9)")
         pausar()

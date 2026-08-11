@@ -2,18 +2,36 @@ from ficheiros import guardar_tarefas
 from utils import pedir_numero, data_atual, formatar_data
 
 
-def pedir_prioridade():
-    while True:
-        prioridade = pedir_numero("Prioridade (1-Alta, 2-Média, 3-Baixa): ")
+def selecionar_tarefa(tarefas):
+    if not tarefas:
+        print("Não existem tarefas.")
+        return None
 
-        if prioridade == 1:
-            return "Alta"
-        elif prioridade == 2:
-            return "Média"
-        elif prioridade == 3:
-            return "Baixa"
-        else:
-            print("Prioridade inválida.")
+    mostrar_tarefas(tarefas)
+
+    numero = pedir_numero("Número da tarefa: ")
+
+    if not 1 <= numero <= len(tarefas):
+        print("Número de tarefa inválido.")
+        return None
+
+    return numero - 1
+
+
+def pedir_prioridade():
+    prioridades = {
+        1: "Alta",
+        2: "Média",
+        3: "Baixa",
+    }
+
+    while True:
+        escolha = pedir_numero("Prioridade (1-Alta, 2-Média, 3-Baixa): ")
+
+        if escolha in prioridades:
+            return prioridades[escolha]
+
+        print("Prioridade inválida.")
 
 
 def mostrar_tarefas(tarefas):
@@ -57,39 +75,25 @@ def adicionar_tarefa(tarefas):
 
 
 def concluir_tarefa(tarefas):
+    indice = selecionar_tarefa(tarefas)
 
-    if not tarefas:
-        print("Não existem tarefas.")
+    if indice is None:
         return
 
-    mostrar_tarefas(tarefas)
-
-    concluir = pedir_numero("Número da tarefa: ")
-
-    if 1 <= concluir <= len(tarefas):
-        tarefas[concluir - 1]["concluida"] = True
-        guardar_tarefas(tarefas)
-        print("Tarefa concluida com sucesso!")
-    else:
-        print("Numero de tarefa inválido.")
+    tarefas[indice]["concluida"] = True
+    guardar_tarefas(tarefas)
+    print("Tarefa concluída com sucesso!")
 
 
 def remover_tarefa(tarefas):
+    indice = selecionar_tarefa(tarefas)
 
-    if not tarefas:
-        print("Não existem tarefas.")
+    if indice is None:
         return
 
-    mostrar_tarefas(tarefas)
-
-    remover = pedir_numero("Número da tarefa: ")
-
-    if 1 <= remover <= len(tarefas):
-        tarefas.pop(remover - 1)
-        guardar_tarefas(tarefas)
-        print("Tarefa removida com sucesso!")
-    else:
-        print("Numero de tarefa invalido.")
+    tarefas.pop(indice)
+    guardar_tarefas(tarefas)
+    print("Tarefa removida com sucesso!")
 
 
 def limpar_tarefas(tarefas):
@@ -97,28 +101,30 @@ def limpar_tarefas(tarefas):
         print("Não existem tarefas.")
         return
 
-    confirmacao = input("Tem a certeza? (s/n): ").lower()
+    while True:
+        confirmacao = input("Tem a certeza? (s/n): ").lower()
 
-    if confirmacao == "s":
-        tarefas.clear()
-        guardar_tarefas(tarefas)
-        print("Todas as tarefas foram removidas!")
-    else:
-        print("Operação cancelada.")
+        if confirmacao == "s":
+            tarefas.clear()
+            guardar_tarefas(tarefas)
+            print("Todas as tarefas foram removidas!")
+            return
+
+        elif confirmacao == "n":
+            print("Operação cancelada.")
+            return
+
+        else:
+            print("Resposta inválida. Introduza 's' ou 'n'.")
 
 
 def editar_tarefa(tarefas):
-    if not tarefas:
-        print("Não existem tarefas.")
+    indice = selecionar_tarefa(tarefas)
+
+    if indice is None:
         return
 
-    mostrar_tarefas(tarefas)
-
-    editar_numero = pedir_numero("Número da tarefa: ")
-
-    if not 1 <= editar_numero <= len(tarefas):
-        print("Número de tarefa inválido.")
-        return
+    tarefa = tarefas[indice]
 
     print(
         "\nO que pretende editar?\n"
@@ -130,8 +136,6 @@ def editar_tarefa(tarefas):
     )
 
     editar_tipo = pedir_numero("Opção: ")
-
-    tarefa = tarefas[editar_numero - 1]
 
     if editar_tipo == 1:
         tarefa["nome"] = input("Novo nome: ")

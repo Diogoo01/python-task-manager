@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 def limpar_terminal():
-    os.system("cls")
+    os.system("cls" if os.name == "nt" else "clear")
 
 
 def pausar():
@@ -13,8 +13,8 @@ def pausar():
 def pedir_numero(mensagem):
     while True:
         try:
-            escolha = int(input(mensagem))
-            return escolha
+            numero = int(input(mensagem))
+            return numero
         except ValueError:
             print("Por favor introduza um valor válido.")
 
