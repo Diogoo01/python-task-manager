@@ -9,6 +9,7 @@ from tarefas import (
     limpar_tarefas,
     editar_tarefa,
     pesquisar_tarefas,
+    filtrar_tarefas,
 )
 
 tarefas = carregar_tarefas()
@@ -49,13 +50,17 @@ while True:
         pesquisar_tarefas(tarefas)
         pausar()
 
+    elif escolha == 8:
+        filtrar_tarefas(tarefas)
+        pausar()
+
+    elif escolha == 9:
+        print("Funcionalidade ainda não implementada.")
+        pausar()
+
     elif escolha == 0:
         print("A sair...")
         break
-
-    elif escolha in (8, 9):
-        print("Funcionalidade ainda não implementada.")
-        pausar()
 
     else:
         print("Por favor introduza um numero valido (0-9)")

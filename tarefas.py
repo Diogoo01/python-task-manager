@@ -1,6 +1,12 @@
 from ficheiros import guardar_tarefas
 from utils import pedir_numero, data_atual, formatar_data
 
+PRIORIDADES = {
+    1: "Alta",
+    2: "Média",
+    3: "Baixa",
+}
+
 
 def selecionar_tarefa(tarefas):
     if not tarefas:
@@ -19,17 +25,12 @@ def selecionar_tarefa(tarefas):
 
 
 def pedir_prioridade():
-    prioridades = {
-        1: "Alta",
-        2: "Média",
-        3: "Baixa",
-    }
 
     while True:
         escolha = pedir_numero("Prioridade (1-Alta, 2-Média, 3-Baixa): ")
 
-        if escolha in prioridades:
-            return prioridades[escolha]
+        if escolha in PRIORIDADES:
+            return PRIORIDADES[escolha]
 
         print("Prioridade inválida.")
 
@@ -55,7 +56,7 @@ def mostrar_tarefas(tarefas):
 def adicionar_tarefa(tarefas):
     nome = input("Nome: ")
     descricao = input("Descrição: ")
-    categoria = input("Categoria: ")
+    categoria = input("Categoria: ").strip().title()
 
     prioridade = pedir_prioridade()
     criada_em = data_atual()
@@ -86,11 +87,63 @@ def concluir_tarefa(tarefas):
 
 
 def remover_tarefa(tarefas):
-    indice = selecionar_tarefa(tarefas)
-
-    if indice is None:
+    if not tarefas:
+        print("Não existem tarefas.")
         return
 
+    mostrar_tarefas(tarefas)
+
+    print("0 - Voltar")
+    print("C - Remover todas as tarefas concluídas")
+
+    escolha = input("Escolha: ").strip().lower()
+
+    if escolha == "0":
+        return
+
+    elif escolha == "c":
+
+        while True:
+            confirmacao = input("Tem a certeza? (s/n): ").strip().lower()
+
+            if confirmacao == "s":
+                break
+
+            elif confirmacao == "n":
+                print("Operação cancelada.")
+                return
+
+            else:
+                print("Resposta inválida. Introduza 's' ou 'n'.")
+
+        pendentes = []
+
+        for tarefa in tarefas:
+            if not tarefa["concluida"]:
+                pendentes.append(tarefa)
+
+        if len(pendentes) == len(tarefas):
+            print("Não existem tarefas concluídas.")
+            return
+
+        tarefas.clear()
+        tarefas.extend(pendentes)
+
+        guardar_tarefas(tarefas)
+        print("Todas as tarefas concluídas foram removidas!")
+        return
+
+    try:
+        numero = int(escolha)
+    except ValueError:
+        print("Opção inválida.")
+        return
+
+    if not 1 <= numero <= len(tarefas):
+        print("Número de tarefa inválido.")
+        return
+
+    indice = numero - 1
     tarefas.pop(indice)
     guardar_tarefas(tarefas)
     print("Tarefa removida com sucesso!")
@@ -144,7 +197,7 @@ def editar_tarefa(tarefas):
         tarefa["descricao"] = input("Nova descrição: ")
 
     elif editar_tipo == 3:
-        tarefa["categoria"] = input("Nova categoria: ")
+        tarefa["categoria"] = input("Nova categoria: ").strip().title()
 
     elif editar_tipo == 4:
         tarefa["prioridade"] = pedir_prioridade()
@@ -174,6 +227,107 @@ def pesquisar_tarefas(tarefas):
 
     if not resultados:
         print("Nenhuma tarefa encontrada.")
+        return
+
+    mostrar_tarefas(resultados)
+
+
+def filtrar_tarefas(tarefas):
+    if not tarefas:
+        print("Não existem tarefas.")
+        return
+
+    print(
+        "\nFiltrar por:\n"
+        "1 - Categoria\n"
+        "2 - Prioridade\n"
+        "3 - Pendentes\n"
+        "4 - Concluídas\n"
+        "0 - Voltar"
+    )
+
+    opcao = pedir_numero("Opção: ")
+
+    if opcao == 1:
+        filtrar_categoria(tarefas)
+    elif opcao == 2:
+        filtrar_prioridade(tarefas)
+    elif opcao == 3:
+        filtrar_estado(tarefas, False)
+    elif opcao == 4:
+        filtrar_estado(tarefas, True)
+    elif opcao == 0:
+        return
+    else:
+        print("Opção inválida.")
+
+
+def filtrar_categoria(tarefas):
+    categorias = []
+
+    for tarefa in tarefas:
+        categorias.append(tarefa["categoria"])
+
+    categorias = sorted(set(categorias))
+
+    print("Categorias disponíveis:")
+
+    for i, categoria in enumerate(categorias, start=1):
+        print(i, "-", categoria)
+
+    opcao = pedir_numero("Categoria: ")
+
+    if opcao == 0:
+        return
+
+    if not 1 <= opcao <= len(categorias):
+        print("Opção inválida.")
+        return
+
+    categoria_escolhida = categorias[opcao - 1]
+
+    resultados = []
+
+    for tarefa in tarefas:
+        if tarefa["categoria"] == categoria_escolhida:
+            resultados.append(tarefa)
+
+    mostrar_tarefas(resultados)
+
+
+def filtrar_prioridade(tarefas):
+    print("\nPrioridades:\n" "1 - Alta\n" "2 - Média\n" "3 - Baixa\n" "0 - Voltar")
+
+    opcao = pedir_numero("Prioridade: ")
+
+    if opcao == 0:
+        return
+
+    if opcao not in PRIORIDADES:
+        print("Opção inválida.")
+        return
+
+    prioridade_escolhida = PRIORIDADES[opcao]
+
+    resultados = []
+
+    for tarefa in tarefas:
+        if tarefa["prioridade"] == prioridade_escolhida:
+            resultados.append(tarefa)
+
+    mostrar_tarefas(resultados)
+
+
+def filtrar_estado(tarefas, concluida):
+    resultados = []
+
+    for tarefa in tarefas:
+        if tarefa["concluida"] == concluida:
+            resultados.append(tarefa)
+
+    if not resultados:
+        estado = "concluídas" if concluida else "pendentes"
+        print(f"Não existem tarefas {estado}.")
         return
 
     mostrar_tarefas(resultados)
