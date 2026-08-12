@@ -6,5 +6,29 @@
         "prioridade": "Alta",
         "concluida": false,
         "criada_em": "2026-08-12 14:26:04"
+    },
+    {
+        "nome": "Lutar",
+        "descricao": "",
+        "categoria": "Desporto",
+        "prioridade": "Média",
+        "concluida": false,
+        "criada_em": "2026-08-12 20:11:53"
+    },
+    {
+        "nome": "saltar corda",
+        "descricao": "",
+        "categoria": "Desporto",
+        "prioridade": "Baixa",
+        "concluida": false,
+        "criada_em": "2026-08-12 20:12:08"
+    },
+    {
+        "nome": "comer arroz",
+        "descricao": "",
+        "categoria": "Saude",
+        "prioridade": "Baixa",
+        "concluida": false,
+        "criada_em": "2026-08-12 20:12:24"
     }
 ]

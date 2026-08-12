@@ -10,6 +10,7 @@ from tarefas import (
     editar_tarefa,
     pesquisar_tarefas,
     filtrar_tarefas,
+    ordenar_tarefas,
 )
 
 tarefas = carregar_tarefas()
@@ -55,7 +56,7 @@ while True:
         pausar()
 
     elif escolha == 9:
-        print("Funcionalidade ainda não implementada.")
+        ordenar_tarefas(tarefas)
         pausar()
 
     elif escolha == 0:

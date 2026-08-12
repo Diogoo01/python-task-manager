@@ -7,6 +7,8 @@ PRIORIDADES = {
     3: "Baixa",
 }
 
+ORDEM_PRIORIDADES = {valor: chave for chave, valor in PRIORIDADES.items()}
+
 
 def selecionar_tarefa(tarefas):
     if not tarefas:
@@ -331,3 +333,68 @@ def filtrar_estado(tarefas, concluida):
         return
 
     mostrar_tarefas(resultados)
+
+
+def ordenar_tarefas(tarefas):
+    if not tarefas:
+        print("Não existem tarefas.")
+        return
+
+    print(
+        "\nOrdenar por:\n"
+        "1 - Data de criação (mais recentes)\n"
+        "2 - Data de criação (mais antigas)\n"
+        "3 - Nome (A-Z)\n"
+        "4 - Nome (Z-A)\n"
+        "5 - Prioridade (Alta-Baixa)\n"
+        "6 - Prioridade (Baixa-Alta)\n"
+        "7 - Categoria (A-Z)\n"
+        "0 - Voltar"
+    )
+
+    opcao = pedir_numero("Opção: ")
+
+    if opcao == 1:
+        tarefas_ordenadas = sorted(
+            tarefas, key=lambda tarefa: tarefa["criada_em"], reverse=True
+        )
+        mostrar_tarefas(tarefas_ordenadas)
+    elif opcao == 2:
+        tarefas_ordenadas = sorted(tarefas, key=lambda tarefa: tarefa["criada_em"])
+        mostrar_tarefas(tarefas_ordenadas)
+
+    elif opcao == 3:
+        tarefas_ordenadas = sorted(tarefas, key=lambda tarefa: tarefa["nome"].lower())
+        mostrar_tarefas(tarefas_ordenadas)
+
+    elif opcao == 4:
+        tarefas_ordenadas = sorted(
+            tarefas, key=lambda tarefa: tarefa["nome"].lower(), reverse=True
+        )
+        mostrar_tarefas(tarefas_ordenadas)
+
+    elif opcao == 5:
+        tarefas_ordenadas = sorted(
+            tarefas, key=lambda tarefa: ORDEM_PRIORIDADES[tarefa["prioridade"]]
+        )
+        mostrar_tarefas(tarefas_ordenadas)
+
+    elif opcao == 6:
+        tarefas_ordenadas = sorted(
+            tarefas,
+            key=lambda tarefa: ORDEM_PRIORIDADES[tarefa["prioridade"]],
+            reverse=True,
+        )
+        mostrar_tarefas(tarefas_ordenadas)
+
+    elif opcao == 7:
+        tarefas_ordenadas = sorted(
+            tarefas, key=lambda tarefa: tarefa["categoria"].lower()
+        )
+        mostrar_tarefas(tarefas_ordenadas)
+
+    elif opcao == 0:
+        return
+
+    else:
+        print("Opção inválida.")
