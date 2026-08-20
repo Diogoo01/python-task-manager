@@ -26,3 +26,14 @@ def data_atual():
 def formatar_data(data_texto):
     data = datetime.strptime(data_texto, "%Y-%m-%d %H:%M:%S")
     return data.strftime("%d/%m/%Y %H:%M")
+
+
+def pedir_prazo():
+    while True:
+        texto = input("Prazo (dd/mm/aaaa hh:mm): ")
+
+        try:
+            prazo = datetime.strptime(texto, "%d/%m/%Y %H:%M")
+            return prazo.strftime("%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            print("Data ou hora inválida.")

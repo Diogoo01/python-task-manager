@@ -1,5 +1,6 @@
 from ficheiros import guardar_tarefas
-from utils import pedir_numero, data_atual, formatar_data
+from utils import pedir_numero, data_atual, formatar_data, pedir_prazo
+from datetime import datetime
 
 PRIORIDADES = {
     1: "Alta",
@@ -44,6 +45,14 @@ def mostrar_tarefas(tarefas):
 
     for i, tarefa in enumerate(tarefas, start=1):
 
+        prazo = tarefa["prazo"]
+        estado_prazo_texto = estado_prazo(tarefa)
+
+        if tarefa["prazo"] is None:
+            prazo_formatado = "Sem prazo"
+        else:
+            prazo_formatado = formatar_data(tarefa["prazo"])
+
         estado = "[X]" if tarefa["concluida"] else "[ ]"
         data = formatar_data(tarefa["criada_em"])
 
@@ -51,7 +60,12 @@ def mostrar_tarefas(tarefas):
             f"{i} - {estado} {tarefa['nome']} | "
             f"{tarefa['prioridade']} | {tarefa['categoria']}"
         )
-        print(f"    {tarefa['descricao']} | Criada: {data}")
+        print(
+            f"    {tarefa['descricao']} | "
+            f"Criada: {data} | "
+            f"Prazo: {prazo_formatado} | "
+            f"Estado: {estado_prazo_texto}"
+        )
         print()
 
 
@@ -59,6 +73,20 @@ def adicionar_tarefa(tarefas):
     nome = input("Nome: ")
     descricao = input("Descrição: ")
     categoria = input("Categoria: ").strip().title()
+
+    while True:
+        confirmacao = input("Adicionar prazo? (s/n): ").strip().lower()
+
+        if confirmacao == "s":
+            prazo = pedir_prazo()
+            break
+
+        elif confirmacao == "n":
+            prazo = None
+            break
+
+        else:
+            print("Resposta inválida. Introduza 's' ou 'n'.")
 
     prioridade = pedir_prioridade()
     criada_em = data_atual()
@@ -70,6 +98,7 @@ def adicionar_tarefa(tarefas):
         "prioridade": prioridade,
         "concluida": False,
         "criada_em": criada_em,
+        "prazo": prazo,
     }
 
     tarefas.append(tarefa)
@@ -187,6 +216,7 @@ def editar_tarefa(tarefas):
         "2 - Descrição\n"
         "3 - Categoria\n"
         "4 - Prioridade\n"
+        "5 - Prazo\n"
         "0 - Cancelar"
     )
 
@@ -203,6 +233,29 @@ def editar_tarefa(tarefas):
 
     elif editar_tipo == 4:
         tarefa["prioridade"] = pedir_prioridade()
+
+    elif editar_tipo == 5:
+        print(
+            "\nPrazo:\n"
+            "1 - Definir/alterar prazo\n"
+            "2 - Remover prazo\n"
+            "0 - Cancelar"
+        )
+
+        opcao_prazo = pedir_numero("Opção: ")
+
+        if opcao_prazo == 1:
+            tarefa["prazo"] = pedir_prazo()
+
+        elif opcao_prazo == 2:
+            tarefa["prazo"] = None
+
+        elif opcao_prazo == 0:
+            return
+
+        else:
+            print("Opção inválida.")
+            return
 
     elif editar_tipo == 0:
         return
@@ -398,3 +451,55 @@ def ordenar_tarefas(tarefas):
 
     else:
         print("Opção inválida.")
+
+
+def estado_prazo(tarefa):
+    prazo = tarefa["prazo"]
+
+    if prazo is None:
+        return "Sem prazo"
+
+    prazo_data = datetime.strptime(prazo, "%Y-%m-%d %H:%M:%S")
+    agora = datetime.now()
+
+    if not tarefa["concluida"] and prazo_data < agora:
+        return "Atrasada"
+
+    diferenca = prazo_data - agora
+    segundos = int(diferenca.total_seconds())
+
+    dias = segundos // 86400
+    horas = segundos // 3600
+    minutos = segundos // 60
+
+    anos = dias // 365
+    if anos >= 1:
+        if anos == 1:
+            return "Falta 1 ano"
+        return f"Faltam {anos} anos"
+
+    meses = dias // 30
+    if meses >= 1:
+        if meses == 1:
+            return "Falta 1 mês"
+        return f"Faltam {meses} meses"
+
+    if dias >= 1:
+        if dias == 1:
+            return "Falta 1 dia"
+        return f"Faltam {dias} dias"
+
+    if horas >= 1:
+        if horas == 1:
+            return "Falta 1 hora"
+        return f"Faltam {horas} horas"
+
+    if minutos >= 1:
+        if minutos == 1:
+            return "Falta 1 minuto"
+        return f"Faltam {minutos} minutos"
+
+    if segundos == 1:
+        return "Falta 1 segundo"
+
+    return f"Faltam {segundos} segundos"
