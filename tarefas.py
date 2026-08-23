@@ -1,6 +1,6 @@
 from ficheiros import guardar_tarefas
-from utils import pedir_numero, data_atual, formatar_data, pedir_prazo
-from datetime import datetime
+from utils import pedir_numero, formatar_data, pedir_prazo
+from tarefa import Tarefa
 
 PRIORIDADES = {
     1: "Alta",
@@ -45,23 +45,22 @@ def mostrar_tarefas(tarefas):
 
     for i, tarefa in enumerate(tarefas, start=1):
 
-        prazo = tarefa["prazo"]
-        estado_prazo_texto = estado_prazo(tarefa)
+        estado_prazo_texto = tarefa.estado_prazo()
 
-        if tarefa["prazo"] is None:
+        if tarefa.prazo is None:
             prazo_formatado = "Sem prazo"
         else:
-            prazo_formatado = formatar_data(tarefa["prazo"])
+            prazo_formatado = formatar_data(tarefa.prazo)
 
-        estado = "[X]" if tarefa["concluida"] else "[ ]"
-        data = formatar_data(tarefa["criada_em"])
+        estado = "[X]" if tarefa.concluida else "[ ]"
+        data = formatar_data(tarefa.criada_em)
 
         print(
-            f"{i} - {estado} {tarefa['nome']} | "
-            f"{tarefa['prioridade']} | {tarefa['categoria']}"
+            f"{i} - {estado} {tarefa.nome} | "
+            f"{tarefa.prioridade} | {tarefa.categoria}"
         )
         print(
-            f"    {tarefa['descricao']} | "
+            f"    {tarefa.descricao} | "
             f"Criada: {data} | "
             f"Prazo: {prazo_formatado} | "
             f"Estado: {estado_prazo_texto}"
@@ -89,21 +88,18 @@ def adicionar_tarefa(tarefas):
             print("Resposta inválida. Introduza 's' ou 'n'.")
 
     prioridade = pedir_prioridade()
-    criada_em = data_atual()
 
-    tarefa = {
-        "nome": nome,
-        "descricao": descricao,
-        "categoria": categoria,
-        "prioridade": prioridade,
-        "concluida": False,
-        "criada_em": criada_em,
-        "prazo": prazo,
-    }
+    tarefa = Tarefa(
+        nome,
+        descricao,
+        categoria,
+        prioridade,
+        prazo,
+    )
 
     tarefas.append(tarefa)
     guardar_tarefas(tarefas)
-    print("Tarefa Adicionada com sucesso!")
+    print("Tarefa adicionada com sucesso!")
 
 
 def concluir_tarefa(tarefas):
@@ -112,7 +108,8 @@ def concluir_tarefa(tarefas):
     if indice is None:
         return
 
-    tarefas[indice]["concluida"] = True
+    tarefas[indice].concluir()
+
     guardar_tarefas(tarefas)
     print("Tarefa concluída com sucesso!")
 
@@ -150,7 +147,7 @@ def remover_tarefa(tarefas):
         pendentes = []
 
         for tarefa in tarefas:
-            if not tarefa["concluida"]:
+            if not tarefa.concluida:
                 pendentes.append(tarefa)
 
         if len(pendentes) == len(tarefas):
@@ -223,16 +220,16 @@ def editar_tarefa(tarefas):
     editar_tipo = pedir_numero("Opção: ")
 
     if editar_tipo == 1:
-        tarefa["nome"] = input("Novo nome: ")
+        tarefa.nome = input("Novo nome: ")
 
     elif editar_tipo == 2:
-        tarefa["descricao"] = input("Nova descrição: ")
+        tarefa.descricao = input("Nova descrição: ")
 
     elif editar_tipo == 3:
-        tarefa["categoria"] = input("Nova categoria: ").strip().title()
+        tarefa.categoria = input("Nova categoria: ").strip().title()
 
     elif editar_tipo == 4:
-        tarefa["prioridade"] = pedir_prioridade()
+        tarefa.prioridade = pedir_prioridade()
 
     elif editar_tipo == 5:
         print(
@@ -245,10 +242,10 @@ def editar_tarefa(tarefas):
         opcao_prazo = pedir_numero("Opção: ")
 
         if opcao_prazo == 1:
-            tarefa["prazo"] = pedir_prazo()
+            tarefa.prazo = pedir_prazo()
 
         elif opcao_prazo == 2:
-            tarefa["prazo"] = None
+            tarefa.prazo = None
 
         elif opcao_prazo == 0:
             return
@@ -274,9 +271,9 @@ def pesquisar_tarefas(tarefas):
 
     for tarefa in tarefas:
         if (
-            texto in tarefa["nome"].lower()
-            or texto in tarefa["descricao"].lower()
-            or texto in tarefa["categoria"].lower()
+            texto in tarefa.nome.lower()
+            or texto in tarefa.descricao.lower()
+            or texto in tarefa.categoria.lower()
         ):
             resultados.append(tarefa)
 
@@ -327,7 +324,7 @@ def filtrar_categoria(tarefas):
     categorias = []
 
     for tarefa in tarefas:
-        categorias.append(tarefa["categoria"])
+        categorias.append(tarefa.categoria)
 
     categorias = sorted(set(categorias))
 
@@ -350,7 +347,7 @@ def filtrar_categoria(tarefas):
     resultados = []
 
     for tarefa in tarefas:
-        if tarefa["categoria"] == categoria_escolhida:
+        if tarefa.categoria == categoria_escolhida:
             resultados.append(tarefa)
 
     mostrar_tarefas(resultados)
@@ -373,7 +370,7 @@ def filtrar_prioridade(tarefas):
     resultados = []
 
     for tarefa in tarefas:
-        if tarefa["prioridade"] == prioridade_escolhida:
+        if tarefa.prioridade == prioridade_escolhida:
             resultados.append(tarefa)
 
     mostrar_tarefas(resultados)
@@ -383,7 +380,7 @@ def filtrar_estado(tarefas, concluida):
     resultados = []
 
     for tarefa in tarefas:
-        if tarefa["concluida"] == concluida:
+        if tarefa.concluida == concluida:
             resultados.append(tarefa)
 
     if not resultados:
@@ -415,40 +412,53 @@ def ordenar_tarefas(tarefas):
 
     if opcao == 1:
         tarefas_ordenadas = sorted(
-            tarefas, key=lambda tarefa: tarefa["criada_em"], reverse=True
+            tarefas,
+            key=lambda tarefa: tarefa.criada_em,
+            reverse=True,
         )
         mostrar_tarefas(tarefas_ordenadas)
+
     elif opcao == 2:
-        tarefas_ordenadas = sorted(tarefas, key=lambda tarefa: tarefa["criada_em"])
+        tarefas_ordenadas = sorted(
+            tarefas,
+            key=lambda tarefa: tarefa.criada_em,
+        )
         mostrar_tarefas(tarefas_ordenadas)
 
     elif opcao == 3:
-        tarefas_ordenadas = sorted(tarefas, key=lambda tarefa: tarefa["nome"].lower())
+        tarefas_ordenadas = sorted(
+            tarefas,
+            key=lambda tarefa: tarefa.nome.lower(),
+        )
         mostrar_tarefas(tarefas_ordenadas)
 
     elif opcao == 4:
         tarefas_ordenadas = sorted(
-            tarefas, key=lambda tarefa: tarefa["nome"].lower(), reverse=True
+            tarefas,
+            key=lambda tarefa: tarefa.nome.lower(),
+            reverse=True,
         )
         mostrar_tarefas(tarefas_ordenadas)
 
     elif opcao == 5:
         tarefas_ordenadas = sorted(
-            tarefas, key=lambda tarefa: ORDEM_PRIORIDADES[tarefa["prioridade"]]
+            tarefas,
+            key=lambda tarefa: ORDEM_PRIORIDADES[tarefa.prioridade],
         )
         mostrar_tarefas(tarefas_ordenadas)
 
     elif opcao == 6:
         tarefas_ordenadas = sorted(
             tarefas,
-            key=lambda tarefa: ORDEM_PRIORIDADES[tarefa["prioridade"]],
+            key=lambda tarefa: ORDEM_PRIORIDADES[tarefa.prioridade],
             reverse=True,
         )
         mostrar_tarefas(tarefas_ordenadas)
 
     elif opcao == 7:
         tarefas_ordenadas = sorted(
-            tarefas, key=lambda tarefa: tarefa["categoria"].lower()
+            tarefas,
+            key=lambda tarefa: tarefa.categoria.lower(),
         )
         mostrar_tarefas(tarefas_ordenadas)
 
@@ -459,53 +469,11 @@ def ordenar_tarefas(tarefas):
         print("Opção inválida.")
 
 
-def estado_prazo(tarefa):
-    prazo = tarefa["prazo"]
-
-    if prazo is None:
-        return "Sem prazo"
-
-    prazo_data = datetime.strptime(prazo, "%Y-%m-%d %H:%M:%S")
-    agora = datetime.now()
-
-    if tarefa["concluida"]:
-        return "Concluída"
-
-    if esta_atrasada(tarefa):
-        return "Atrasada"
-
-    diferenca = prazo_data - agora
-    segundos = int(diferenca.total_seconds())
-
-    dias = segundos // 86400
-    horas = segundos // 3600
-    minutos = segundos // 60
-
-    anos = dias // 365
-    if anos >= 1:
-        return "Falta 1 ano" if anos == 1 else f"Faltam {anos} anos"
-
-    meses = dias // 30
-    if meses >= 1:
-        return "Falta 1 mês" if meses == 1 else f"Faltam {meses} meses"
-
-    if dias >= 1:
-        return "Falta 1 dia" if dias == 1 else f"Faltam {dias} dias"
-
-    if horas >= 1:
-        return "Falta 1 hora" if horas == 1 else f"Faltam {horas} horas"
-
-    if minutos >= 1:
-        return "Falta 1 minuto" if minutos == 1 else f"Faltam {minutos} minutos"
-
-    return "Falta 1 segundo" if segundos == 1 else f"Faltam {segundos} segundos"
-
-
 def filtrar_atrasadas(tarefas):
     resultados = []
 
     for tarefa in tarefas:
-        if esta_atrasada(tarefa):
+        if tarefa.esta_atrasada():
             resultados.append(tarefa)
 
     if not resultados:
@@ -519,7 +487,7 @@ def filtrar_sem_prazo(tarefas):
     resultados = []
 
     for tarefa in tarefas:
-        if tarefa["prazo"] is None:
+        if tarefa.prazo is None:
             resultados.append(tarefa)
 
     if not resultados:
@@ -527,20 +495,6 @@ def filtrar_sem_prazo(tarefas):
         return
 
     mostrar_tarefas(resultados)
-
-
-def esta_atrasada(tarefa):
-    prazo = tarefa["prazo"]
-
-    if prazo is None:
-        return False
-
-    if tarefa["concluida"]:
-        return False
-
-    prazo_data = datetime.strptime(prazo, "%Y-%m-%d %H:%M:%S")
-
-    return prazo_data < datetime.now()
 
 
 def mostrar_estatisticas(tarefas):
@@ -564,27 +518,31 @@ def mostrar_estatisticas(tarefas):
 
     for tarefa in tarefas:
 
-        contagem_prioridades[tarefa["prioridade"]] += 1
+        contagem_prioridades[tarefa.prioridade] += 1
 
-        categoria = tarefa["categoria"]
+        categoria = tarefa.categoria
 
         if categoria in contagem_categorias:
             contagem_categorias[categoria] += 1
         else:
             contagem_categorias[categoria] = 1
 
-        if tarefa["concluida"]:
+        if tarefa.concluida:
             concluidas += 1
         else:
             pendentes += 1
 
-        if esta_atrasada(tarefa):
+        if tarefa.esta_atrasada():
             atrasadas += 1
 
-        if tarefa["prazo"] is None:
+        if tarefa.prazo is None:
             sem_prazo += 1
 
-    categoria_mais_usada = max(contagem_categorias, key=contagem_categorias.get)
+    categoria_mais_usada = max(
+        contagem_categorias,
+        key=contagem_categorias.get,
+    )
+
     quantidade_categoria = contagem_categorias[categoria_mais_usada]
     taxa_conclusao = (concluidas / total) * 100
     com_prazo = total - sem_prazo
@@ -596,12 +554,15 @@ def mostrar_estatisticas(tarefas):
     print("Atrasadas:", atrasadas)
     print("Com prazo:", com_prazo)
     print("Sem prazo:", sem_prazo)
+
     print("\nPrioridades:")
     print("Alta:", contagem_prioridades["Alta"])
     print("Média:", contagem_prioridades["Média"])
     print("Baixa:", contagem_prioridades["Baixa"])
+
     print(
         f"\nCategoria com mais tarefas: "
         f"{categoria_mais_usada} ({quantidade_categoria})"
     )
+
     print(f"\nTaxa de conclusão: {taxa_conclusao:.1f}%")
