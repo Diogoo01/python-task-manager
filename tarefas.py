@@ -298,6 +298,8 @@ def filtrar_tarefas(tarefas):
         "2 - Prioridade\n"
         "3 - Pendentes\n"
         "4 - Concluídas\n"
+        "5 - Atrasadas\n"
+        "6 - Sem Prazo\n"
         "0 - Voltar"
     )
 
@@ -311,6 +313,10 @@ def filtrar_tarefas(tarefas):
         filtrar_estado(tarefas, False)
     elif opcao == 4:
         filtrar_estado(tarefas, True)
+    elif opcao == 5:
+        filtrar_atrasadas(tarefas)
+    elif opcao == 6:
+        filtrar_sem_prazo(tarefas)
     elif opcao == 0:
         return
     else:
@@ -462,7 +468,10 @@ def estado_prazo(tarefa):
     prazo_data = datetime.strptime(prazo, "%Y-%m-%d %H:%M:%S")
     agora = datetime.now()
 
-    if not tarefa["concluida"] and prazo_data < agora:
+    if tarefa["concluida"]:
+        return "Concluída"
+
+    if esta_atrasada(tarefa):
         return "Atrasada"
 
     diferenca = prazo_data - agora
@@ -474,32 +483,61 @@ def estado_prazo(tarefa):
 
     anos = dias // 365
     if anos >= 1:
-        if anos == 1:
-            return "Falta 1 ano"
-        return f"Faltam {anos} anos"
+        return "Falta 1 ano" if anos == 1 else f"Faltam {anos} anos"
 
     meses = dias // 30
     if meses >= 1:
-        if meses == 1:
-            return "Falta 1 mês"
-        return f"Faltam {meses} meses"
+        return "Falta 1 mês" if meses == 1 else f"Faltam {meses} meses"
 
     if dias >= 1:
-        if dias == 1:
-            return "Falta 1 dia"
-        return f"Faltam {dias} dias"
+        return "Falta 1 dia" if dias == 1 else f"Faltam {dias} dias"
 
     if horas >= 1:
-        if horas == 1:
-            return "Falta 1 hora"
-        return f"Faltam {horas} horas"
+        return "Falta 1 hora" if horas == 1 else f"Faltam {horas} horas"
 
     if minutos >= 1:
-        if minutos == 1:
-            return "Falta 1 minuto"
-        return f"Faltam {minutos} minutos"
+        return "Falta 1 minuto" if minutos == 1 else f"Faltam {minutos} minutos"
 
-    if segundos == 1:
-        return "Falta 1 segundo"
+    return "Falta 1 segundo" if segundos == 1 else f"Faltam {segundos} segundos"
 
-    return f"Faltam {segundos} segundos"
+
+def filtrar_atrasadas(tarefas):
+    resultados = []
+
+    for tarefa in tarefas:
+        if esta_atrasada(tarefa):
+            resultados.append(tarefa)
+
+    if not resultados:
+        print("Não existem tarefas atrasadas.")
+        return
+
+    mostrar_tarefas(resultados)
+
+
+def filtrar_sem_prazo(tarefas):
+    resultados = []
+
+    for tarefa in tarefas:
+        if tarefa["prazo"] is None:
+            resultados.append(tarefa)
+
+    if not resultados:
+        print("Não existem tarefas sem prazo.")
+        return
+
+    mostrar_tarefas(resultados)
+
+
+def esta_atrasada(tarefa):
+    prazo = tarefa["prazo"]
+
+    if prazo is None:
+        return False
+
+    if tarefa["concluida"]:
+        return False
+
+    prazo_data = datetime.strptime(prazo, "%Y-%m-%d %H:%M:%S")
+
+    return prazo_data < datetime.now()
