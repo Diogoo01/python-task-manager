@@ -1,20 +1,8 @@
 from menu import mostrar_menu
 from utils import limpar_terminal, pausar, pedir_numero
-from ficheiros import carregar_tarefas
-from tarefas import (
-    mostrar_tarefas,
-    adicionar_tarefa,
-    remover_tarefa,
-    concluir_tarefa,
-    limpar_tarefas,
-    editar_tarefa,
-    pesquisar_tarefas,
-    filtrar_tarefas,
-    ordenar_tarefas,
-    mostrar_estatisticas,
-)
+from gestor_tarefas import GestorTarefas
 
-tarefas = carregar_tarefas()
+gestor = GestorTarefas()
 
 
 while True:
@@ -25,43 +13,43 @@ while True:
     escolha = pedir_numero("Selecione uma opção: ")
 
     if escolha == 1:
-        mostrar_tarefas(tarefas)
+        gestor.mostrar_tarefas()
         pausar()
 
     elif escolha == 2:
-        adicionar_tarefa(tarefas)
+        gestor.adicionar_tarefa()
         pausar()
 
     elif escolha == 3:
-        concluir_tarefa(tarefas)
+        gestor.concluir_tarefa()
         pausar()
 
     elif escolha == 4:
-        remover_tarefa(tarefas)
+        gestor.remover_tarefa()
         pausar()
 
     elif escolha == 5:
-        limpar_tarefas(tarefas)
+        gestor.limpar_tarefas()
         pausar()
 
     elif escolha == 6:
-        editar_tarefa(tarefas)
+        gestor.editar_tarefa()
         pausar()
 
     elif escolha == 7:
-        pesquisar_tarefas(tarefas)
+        gestor.pesquisar_tarefas()
         pausar()
 
     elif escolha == 8:
-        filtrar_tarefas(tarefas)
+        gestor.filtrar_tarefas()
         pausar()
 
     elif escolha == 9:
-        ordenar_tarefas(tarefas)
+        gestor.ordenar_tarefas()
         pausar()
 
     elif escolha == 10:
-        mostrar_estatisticas(tarefas)
+        gestor.mostrar_estatisticas()
         pausar()
 
     elif escolha == 0:
@@ -69,5 +57,5 @@ while True:
         break
 
     else:
-        print("Por favor introduza um numero valido (0-9)")
+        print("Por favor introduza um numero valido (0-10)")
         pausar()
