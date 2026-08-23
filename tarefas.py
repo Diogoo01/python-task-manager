@@ -541,3 +541,67 @@ def esta_atrasada(tarefa):
     prazo_data = datetime.strptime(prazo, "%Y-%m-%d %H:%M:%S")
 
     return prazo_data < datetime.now()
+
+
+def mostrar_estatisticas(tarefas):
+
+    if not tarefas:
+        print("Não existem tarefas.")
+        return
+
+    total = len(tarefas)
+    concluidas = 0
+    pendentes = 0
+    atrasadas = 0
+    sem_prazo = 0
+    contagem_categorias = {}
+
+    contagem_prioridades = {
+        "Alta": 0,
+        "Média": 0,
+        "Baixa": 0,
+    }
+
+    for tarefa in tarefas:
+
+        contagem_prioridades[tarefa["prioridade"]] += 1
+
+        categoria = tarefa["categoria"]
+
+        if categoria in contagem_categorias:
+            contagem_categorias[categoria] += 1
+        else:
+            contagem_categorias[categoria] = 1
+
+        if tarefa["concluida"]:
+            concluidas += 1
+        else:
+            pendentes += 1
+
+        if esta_atrasada(tarefa):
+            atrasadas += 1
+
+        if tarefa["prazo"] is None:
+            sem_prazo += 1
+
+    categoria_mais_usada = max(contagem_categorias, key=contagem_categorias.get)
+    quantidade_categoria = contagem_categorias[categoria_mais_usada]
+    taxa_conclusao = (concluidas / total) * 100
+    com_prazo = total - sem_prazo
+
+    print("===== Estatísticas =====\n")
+    print("Total de tarefas:", total)
+    print("\nPendentes:", pendentes)
+    print("Concluídas:", concluidas)
+    print("Atrasadas:", atrasadas)
+    print("Com prazo:", com_prazo)
+    print("Sem prazo:", sem_prazo)
+    print("\nPrioridades:")
+    print("Alta:", contagem_prioridades["Alta"])
+    print("Média:", contagem_prioridades["Média"])
+    print("Baixa:", contagem_prioridades["Baixa"])
+    print(
+        f"\nCategoria com mais tarefas: "
+        f"{categoria_mais_usada} ({quantidade_categoria})"
+    )
+    print(f"\nTaxa de conclusão: {taxa_conclusao:.1f}%")

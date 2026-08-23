@@ -11,6 +11,7 @@ from tarefas import (
     pesquisar_tarefas,
     filtrar_tarefas,
     ordenar_tarefas,
+    mostrar_estatisticas,
 )
 
 tarefas = carregar_tarefas()
@@ -57,6 +58,10 @@ while True:
 
     elif escolha == 9:
         ordenar_tarefas(tarefas)
+        pausar()
+
+    elif escolha == 10:
+        mostrar_estatisticas(tarefas)
         pausar()
 
     elif escolha == 0:

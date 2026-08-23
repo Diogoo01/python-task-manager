@@ -9,4 +9,5 @@ def mostrar_menu():
     print("7 - Pesquisar Tarefas")
     print("8 - Filtrar Tarefas")
     print("9 - Ordenar Tarefas")
+    print("10 - Estatísticas")
     print("0 - Sair\n")
